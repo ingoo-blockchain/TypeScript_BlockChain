@@ -1,0 +1,39 @@
+{
+    "name": "ts",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "tsc:init": "tsc --init",
+        "tsc": "tsc",
+        "test": "jest"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@babel/core": "^7.21.0",
+        "@babel/preset-env": "^7.20.2",
+        "@types/jest": "^29.4.0",
+        "@types/node": "^18.14.6",
+        "babel-jest": "^29.5.0",
+        "crypto-js": "^4.1.1",
+        "hex-to-binary": "^1.0.1",
+        "merkle": "^0.6.0",
+        "ts-jest": "^29.0.5",
+        "typescript": "^4.9.5"
+    },
+    "jest": {
+        "verbose": true,
+        "transform": {
+            "^.+\\.tsx?$": "ts-jest",
+            "^.+\\.jsx?$": "babel-jest"
+        },
+        "moduleNameMapper": {
+            "^@/(.*)$": "<rootDir>/src/$1"
+        }
+    },
+    "devDependencies": {
+        "@types/crypto-js": "^4.1.1",
+        "@types/merkle": "^0.6.1"
+    }
+}

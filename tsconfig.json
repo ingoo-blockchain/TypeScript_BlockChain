@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "outDir": "dist",
+        "target": "ES6",
+        "esModuleInterop": true, // import React form 'react'
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "strict": true,
+        "typeRoots": ["node_modules/@types", "src/@types"],
+        "types": ["jest"],
+        "baseUrl": "./",
+        "paths": {
+            "@/*": ["src/*"],
+            "@core/*": ["src/core/*"]
+        }
+    }
+}
