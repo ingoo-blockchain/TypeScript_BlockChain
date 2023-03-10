@@ -1,12 +1,11 @@
 import { SHA256 } from 'crypto-js'
 import merkle from 'merkle'
 import hexToBinary from 'hex-to-binary'
-import { DIFFICULTY_ADJUSTMENT_INTERVAL, UNIT, BLOCK_GENERATION_INTERVAL, VERSION } from '@/block.config'
-import Block from '.'
+import { Block } from '@core/block/Block'
 import { BlockHashLengthError, BlockValidationException } from '@/exceptions'
 
-export default class BlockGenerator {
-    constructor() {}
+export class BlockGenerator {
+    constructor(private readonly config: BlockConfig) {}
 
     create(blockData: BlockData): IBlock {
         const { previousBlock, adjustment } = blockData
@@ -24,13 +23,19 @@ export default class BlockGenerator {
             data: blockData.data,
         })
 
-        const isValid = this.isValidNewBlock(previousBlock, block)
-        return block
+        return this.isValidNewBlock(previousBlock, block)
     }
 
-    private getDifficulty(params: BlockDifficultyParams): number {
+    get genesis(): Block {
+        return this.config.GENESIS
+    }
+
+    get interval(): number {
+        return this.config.DIFFICULTY_ADJUSTMENT_INTERVAL
+    }
+
+    private getDifficulty(params: BlockDifficultyParams, timestamp: number): number {
         const { height, adjustment, previousDifficulty } = params
-        const timestamp = this.getTimestamp()
 
         if (height < 0) {
             throw new Error('height should be greater than or equal to 0')
@@ -38,10 +43,11 @@ export default class BlockGenerator {
 
         if (height < 10) return 0
         if (height >= 10 && height < 20) return 1
-        if (height % DIFFICULTY_ADJUSTMENT_INTERVAL !== 0) return previousDifficulty
+        if (height % this.config.DIFFICULTY_ADJUSTMENT_INTERVAL !== 0) return previousDifficulty
 
         const timeTaken = timestamp - adjustment.timestamp
-        const timeExpected = UNIT * BLOCK_GENERATION_INTERVAL * DIFFICULTY_ADJUSTMENT_INTERVAL
+        const timeExpected =
+            this.config.UNIT * this.config.BLOCK_GENERATION_INTERVAL * this.config.DIFFICULTY_ADJUSTMENT_INTERVAL
 
         if (timeTaken < timeExpected / 2) return adjustment.difficulty + 1
         if (timeTaken > timeExpected * 2) return adjustment.difficulty - 1
@@ -59,14 +65,15 @@ export default class BlockGenerator {
 
     private proofOfWork(params: ProofOfWorkParams) {
         const { previousBlock, difficulty, data } = params
+        const timestamp = this.getTimestamp()
         const block = new Block({
-            version: VERSION,
+            version: this.config.VERSION,
             height: difficulty.height,
             timestamp: this.getTimestamp(),
             previousHash: previousBlock.hash,
             merkleRoot: this.getMerkleRoot(data),
             nonce: 0,
-            difficulty: this.getDifficulty(difficulty),
+            difficulty: this.getDifficulty(difficulty, timestamp),
             hash: 'f'.repeat(64),
             data,
         })
@@ -75,23 +82,24 @@ export default class BlockGenerator {
 
         do {
             block.nonce += 1
-            block.difficulty = this.getDifficulty(difficulty)
             block.timestamp = this.getTimestamp()
-            const { hash, data, ...blockHeader } = block
-            block.hash = this.createBlockHash(blockHeader)
+            block.difficulty = this.getDifficulty(difficulty, block.timestamp)
+
+            block.hash = this.createBlockHash(block)
             hashBinary = hexToBinary(block.hash)
         } while (!hashBinary.startsWith('0'.repeat(block.difficulty)))
 
         return block
     }
 
-    private createBlockHash(blockHeader: BlockHeader): string {
-        const hash = SHA256(Object.values(blockHeader).join('')).toString()
-        if (hash.length === 64) throw new BlockHashLengthError('Invalid Block Length.')
-        return hash
+    private createBlockHash(block: IBlock): string {
+        const { hash, data, ...blockHeader } = block
+        const newHash = SHA256(Object.values(blockHeader).sort().join('')).toString()
+        if (newHash.length !== 64) throw new BlockHashLengthError('Invalid Block Length.')
+        return newHash
     }
 
-    private isValidNewBlock(previousBlock: Block, newBlock: Block): Block {
+    private isValidNewBlock(previousBlock: IBlock, newBlock: IBlock): IBlock {
         if (previousBlock.height + 1 !== newBlock.height)
             throw new BlockValidationException('Block height is incorrect.')
 

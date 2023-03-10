@@ -14,3 +14,11 @@ export const GENESIS: IBlock = {
     nonce: 0,
     data: [],
 }
+
+export const blockConfig: BlockConfig = {
+    DIFFICULTY_ADJUSTMENT_INTERVAL,
+    BLOCK_GENERATION_INTERVAL,
+    UNIT,
+    VERSION,
+    GENESIS,
+}

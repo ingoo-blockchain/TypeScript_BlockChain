@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "CommonJS",
+        "module": "commonJS",
         "outDir": "dist",
         "target": "ES6",
         "esModuleInterop": true, // import React form 'react'
@@ -9,10 +9,14 @@
         "strict": true,
         "typeRoots": ["node_modules/@types", "src/@types"],
         "types": ["jest"],
-        "baseUrl": "./",
+        "baseUrl": "./src",
         "paths": {
-            "@/*": ["src/*"],
-            "@core/*": ["src/core/*"]
+            "@/*": ["*"],
+            "@types/*": ["types/*"],
+            "@core/*": ["core/*"],
+            "@exception/*": ["exceptions/*"]
         }
-    }
+    },
+    "include": ["./src/**/*", "@types/*"],
+    "exclued": ["node_modules", "**/*.test.ts"]
 }
