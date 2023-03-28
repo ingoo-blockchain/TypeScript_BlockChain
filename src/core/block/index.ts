@@ -1,6 +1,5 @@
-import { BlockGenerator } from '@core/block/BlockGenerator'
+import Block from '@/core/block/Block'
 import { blockConfig } from '@/config'
 
-export const block = new BlockGenerator(blockConfig)
-export * from '@core/block/Block'
-export * from '@core/block/BlockGenerator'
+const block = new Block(blockConfig)
+export default block

@@ -1,6 +1,5 @@
 import { ChainValidator } from '@/@types/ChainValidator'
 import { BlockNotFoundException, LatestBlockNotFoundException } from '@/exceptions'
-import { Block } from '@core/block'
 
 export default class Chain {
     constructor(private readonly blocks: IBlock[], private readonly validators: ChainValidator[]) {}
@@ -38,13 +37,13 @@ export default class Chain {
         return chain
     }
 
-    get latestBlock(): Block {
+    get latestBlock(): IBlock {
         const index = this.blocks.length
         if (index === 0) throw new LatestBlockNotFoundException('Latest block not found')
         return this.blocks[index - 1]
     }
 
-    get allBlock(): Block[] {
+    get allBlock(): IBlock[] {
         return [...this.blocks]
     }
 
@@ -57,17 +56,17 @@ export default class Chain {
         return block
     }
 
-    getBlockByHash(hash: string): Block {
-        const f = (block: Block) => block.hash === hash
+    getBlockByHash(hash: string): IBlock {
+        const f = (block: IBlock) => block.hash === hash
         return this.getBlock(f)
     }
 
-    getBlockByHeight(height: number): Block {
-        const f = (block: Block) => block.height === height
+    getBlockByHeight(height: number): IBlock {
+        const f = (block: IBlock) => block.height === height
         return this.getBlock(f)
     }
 
-    getBlock(f: (block: Block) => boolean): Block {
+    getBlock(f: (block: IBlock) => boolean): IBlock {
         const block = this.blocks.find(f)
         if (block === undefined) throw new BlockNotFoundException('Block Not Found')
         return block

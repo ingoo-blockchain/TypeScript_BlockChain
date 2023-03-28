@@ -1,4 +1,6 @@
-export * from '@exception/BlockHashLengthException'
+export * from '@/exceptions/BlockHashException'
 export * from '@exception/BlockNotFoundException'
 export * from '@exception/BlockValidationException'
 export * from '@exception/LatestBlockNotFoundException'
+export * from '@exception/BlockHeightException'
+export * from '@exception/BlockMerkleRootException'

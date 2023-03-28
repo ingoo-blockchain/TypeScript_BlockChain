@@ -12,7 +12,7 @@ export const GENESIS: IBlock = {
     merkleRoot: '0'.repeat(64),
     difficulty: 0,
     nonce: 0,
-    data: [],
+    data: ['genesis block'],
 }
 
 export const blockConfig: BlockConfig = {
