@@ -1,3 +1,3 @@
-import { blockchain } from './core/core.module'
+import { core } from './core/core.module'
 
-console.log(blockchain)
+console.log(core.chains)
